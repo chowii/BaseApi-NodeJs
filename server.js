@@ -8,10 +8,18 @@ const port = 8000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-MongoClient.connect(db.url, (err, database) => {
-    if (err) return console.log("OMG Some error again: \n" + err);
-    require('./app/routes')(app, database.db("sample_mflix"));
+async function main() {
+    const client = new MongoClient(db.url);
+    await client.connect();
+
+    launchServer(client);
+}
+
+main().catch(console.log);
+
+function launchServer(database) {
+    require('./app/routes')(app, database);
     app.listen(port, () => {
         console.log("Live!")
     })
-});
+}
