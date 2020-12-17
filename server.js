@@ -3,6 +3,7 @@ const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
 const db = require("./config/db");
 const app = express();
+const appRoutes = require('./app/routes')
 
 const port = 8000;
 
@@ -18,7 +19,7 @@ async function main() {
 main().catch(console.log);
 
 function launchServer(database) {
-    require('./app/routes')(app, database);
+    appRoutes(app, database);
     app.listen(port, () => {
         console.log("Live!")
     })

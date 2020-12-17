@@ -1,11 +1,24 @@
 var ObjectId = require('mongodb').ObjectId
 
-module.exports = function(app, db) {
+module.exports = function(app, client) {
+
+	app.get('/', (_, res) => {
+		databasesList = getListDatabases(client, function(err, dbList) {
+			if (err) return console.log("OMG Some error again: \n" + err);
+		
+			let databasesNameList = dbList.databases.map((item) => { return {'name' : item.name }});
+			res.send(databasesNameList);
+		})
+	});
+
+	async function getListDatabases(client, cb) { 
+		return await client.db().admin().listDatabases(cb);
+	};
 
 	app.get('/notes/:id', (req, res) => {
 		const id = req.params.id;
 		const details = { '_id': new ObjectId(id) };
-		db.collection('users').findOne(details, (err, item) => {
+		client.db().collection('users').findOne(details, (err, item) => {
 			if (err) {
 				res.send({ 'error': 'An error has occured' });
 			} else {
@@ -15,7 +28,7 @@ module.exports = function(app, db) {
 	});
 
 	app.get('/notes/', (req, res) => {
-		db.collection('users').find({}).toArray(function(err, result) {
+		client.db().collection('users').find({}).toArray(function(err, result) {
 			if (err) {
 				res.send({ 'error' : 'An error has occured' });
 			} else {
@@ -28,7 +41,7 @@ module.exports = function(app, db) {
 
 	app.post('/notes', (req, res) => {
 		const note = { text: req.body.body, title: req.body.title };
-		db.collection('notes_test').insert(note, (err, result) => {
+		client.db.collection('notes_test').insert(note, (err, result) => {
 			if (err) {
 				res.send({ 'error': 'An error has occured' });
 			} else {
