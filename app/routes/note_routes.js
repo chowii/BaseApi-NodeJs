@@ -5,7 +5,7 @@ module.exports = function(app, db) {
 	app.get('/notes/:id', (req, res) => {
 		const id = req.params.id;
 		const details = { '_id': new ObjectId(id) };
-		db.collection('notes_test').findOne(details, (err, item) => {
+		db.collection('users').findOne(details, (err, item) => {
 			if (err) {
 				res.send({ 'error': 'An error has occured' });
 			} else {
@@ -15,10 +15,12 @@ module.exports = function(app, db) {
 	});
 
 	app.get('/notes/', (req, res) => {
-		db.collection('notes_test').find({}).toArray(function(err, result) {
+		db.collection('users').find({}).toArray(function(err, result) {
 			if (err) {
 				res.send({ 'error' : 'An error has occured' });
 			} else {
+				console.log("RESPONSE RESULT>>")
+				console.log(result);
 				res.send(result);
 			}
 		})
