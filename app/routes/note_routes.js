@@ -15,14 +15,14 @@ module.exports = function(app, client) {
 		return await client.db().admin().listDatabases(cb);
 	};
 
-	app.get('/notes/:id', (req, res) => {
-		const id = req.params.id;
-		const details = { '_id': new ObjectId(id) };
-		client.db().collection('users').findOne(details, (err, item) => {
+	app.get('/notes/:name', (req, res) => {
+		const id = req.params.name;
+		client.db(id).listCollections().toArray((err, collections) => {
 			if (err) {
 				res.send({ 'error': 'An error has occured' });
 			} else {
-				res.send(item);
+				let collectionNameList = collections.map((item) => { return { 'name' : item.name }});
+				res.send(collectionNameList);
 			}
 		})
 	});
