@@ -1,4 +1,5 @@
 var ObjectId = require('mongodb').ObjectId
+const movieModel = require('/Users/nscy6/IntellijProjects/BaseApi-NodeJs/atlas/MoviesModel.js')
 
 module.exports = function(app, client) {
 
@@ -51,14 +52,24 @@ module.exports = function(app, client) {
 		})
 	});
 
-	app.post('/notes', (req, res) => {
-		const note = { text: req.body.body, title: req.body.title };
-		client.db.collection('notes_test').insert(note, (err, result) => {
-			if (err) {
+	app.get('/:name/:table/:id', (req, res) => {
+		const headers = req.headers
+		const limit = parseInt(headers.pagesize)
+		const page = parseInt(headers.page)
+		const params = req.params
+		const name = params.name;
+		const table = params.table;
+		const id = params.id;
+		const query = req.query
+		console.log(query)
+		movieModel.find(query, function(error, movie) {
+			if (error) {
 				res.send({ 'error': 'An error has occured' });
 			} else {
-				res.send(result.ops[0]);
+				console.log(movie)
+				res.status(200).send(movie);
 			}
+		})
+		console.log(id)
 		});
-	});
 };
